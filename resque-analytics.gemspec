@@ -16,14 +16,13 @@ Gem::Specification.new do |s|
   s.email = "nir.tzur@samanage.com"
   s.extra_rdoc_files = [
     "LICENSE",
-    "README.md"
+    "README.rdoc"
   ]
   s.files = [
     ".document",
     "Gemfile",
     "Gemfile.lock",
     "LICENSE",
-    "README.md",
     "Rakefile",
     "VERSION",
     "lib/resque-analytics.rb",
