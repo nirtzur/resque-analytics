@@ -11,11 +11,12 @@ For each worker, the gem keeps the following key performance indicators:
 
 == Installation
 
-Requires resque '~> 1.25.1'
+Requires resque '~> 1.25.1', and googlecharts '~> 1.6.8'
+
 
 Add the following to your gemfile:
 
-  gem 'resque-analytics'
+  gem 'resque-analytics', require: 'resque-analytics/server'
 
 == Usage
 
@@ -29,6 +30,8 @@ Extend Resque workers with:
       # ..
     end
   end
+
+On the Resque screens, you will find a new tab called "Analytics".
 
 == TODO
 

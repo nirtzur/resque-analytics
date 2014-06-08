@@ -1,4 +1,5 @@
 require 'resque/server'
+require 'resque/plugins/analytics'
 
 module Resque
   module Plugins
