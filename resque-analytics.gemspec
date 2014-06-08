@@ -15,7 +15,22 @@ Gem::Specification.new do |s|
   s.description = "Shows Resque jobs key performance indciators over time"
   s.email = "nir.tzur@samanage.com"
   s.extra_rdoc_files = [
-    "LICENSE.txt"
+    "LICENSE",
+    "README.md"
+  ]
+  s.files = [
+    ".document",
+    "Gemfile",
+    "Gemfile.lock",
+    "LICENSE",
+    "README.md",
+    "Rakefile",
+    "VERSION",
+    "lib/resque-analytics.rb",
+    "lib/resque-analytics/server.rb",
+    "lib/resque-analytics/server/views/analytics.erb",
+    "lib/resque/plugins/analytics.rb",
+    "resque-analytics.gemspec"
   ]
   s.homepage = "http://github.com/nirtzur/resque-analytics"
   s.licenses = ["MIT"]

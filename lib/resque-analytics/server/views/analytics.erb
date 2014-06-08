@@ -17,6 +17,7 @@
     bar_width_and_spacing: '6',
     axis_range: [[-90,0,-5], [0, performed.max + failed.max ]],
     legend: [Resque::Plugins::Analytics::PERFORMED, Resque::Plugins::Analytics::FAILED],
+    legend_position: 'top',
     bar_colors: ['000000', '0088FF']
   ) %>
 
@@ -29,7 +30,8 @@
     axis_with_labels: ['x,y'],
     bar_width_and_spacing: '6',
     axis_range: [[-90,0,-5], [0, run_time.max ]],
-    legend: [Resque::Plugins::Analytics::TOTAL_TIME]
+    legend: [Resque::Plugins::Analytics::TOTAL_TIME],
+    legend_position: 'top'
   ) %>
 
 <% end %>
