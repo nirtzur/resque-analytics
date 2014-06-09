@@ -17,7 +17,7 @@ module Resque
       @queue = queue
       @payload = payload
       @failure_hooks_ran = false
-      payload_class.send(:analytics_timestamp, timestamp) if payload_class.respond_to?(:analytics_timestamp)
+      payload_class.send(:analytics_timestamp, timestamp) if timestamp && payload_class.respond_to?(:analytics_timestamp)
     end
   end
 
