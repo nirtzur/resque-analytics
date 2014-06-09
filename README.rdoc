@@ -1,5 +1,7 @@
 = resque-analytics
 
+{<img src="https://badge.fury.io/rb/resque-analytics.svg" alt="Gem Version" />}[http://badge.fury.io/rb/resque-analytics]
+
 Resque jobs analytics and  key performance indicators over time
 
 This gem keeps statistics per worker for the last 90 days, to be later shown as over time graphs.
