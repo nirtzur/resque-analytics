@@ -7,6 +7,11 @@ For each worker, the gem keeps the following key performance indicators:
 * Number of times it executed successfuly per day
 * Number of times is failed per day
 * Total run time per day
+* Total wait time per day, which is the amount of time items for this worker were waiting in the queue
+
+Wait is somewhat tricky, as Resque doesn't provide the proper hooks to calculate this value. To handle that, I had to
+replace Resque's push method, and Job initialization method. These methods now add a timestamp when items are added
+to queues, and use the timestamp to calculate the total wait time, when an item is taken out of the queue.
 
 == Installation
 
@@ -35,7 +40,6 @@ On the Resque screens, you will find a new tab called "Analytics".
 == TODO
 
 * Add tests
-* Add queued time to total run time analytics
 
 == Contributing to resque-analytics
 

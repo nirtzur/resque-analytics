@@ -32,6 +32,21 @@ module Resque
           def chart_data(data, job, kpi)
             legend_keys.map { |key| @data[job][kpi][key].to_i || 0 }
           end
+
+          def chart_it(title, legend, data)
+            Gchart.bar(
+              data: data,
+              title: title,
+              format: "image_tag",
+              size: "1000x300",
+              axis_with_labels: ['x,y'],
+              bar_width_and_spacing: '6',
+              axis_range: [[-90,0,-5], [0, data.map(&:max).sum ]],
+              legend: legend,
+              legend_position: 'top',
+              bar_colors: ['000000', '0088FF']
+            )
+          end
         end
 
         class << self
@@ -39,7 +54,7 @@ module Resque
             app.get '/analytics' do
               @data = measured_jobs.inject({}) { |res, job|
                 res[job] = {}
-                [PERFORMED, FAILED, TOTAL_TIME].each { |kpi| res[job][kpi] = counters_for(job, kpi) }
+                [PERFORMED, FAILED, TOTAL_TIME, WAIT_TIME].each { |kpi| res[job][kpi] = counters_for(job, kpi) }
                 res
               }
               erb(File.read(File.join(VIEW_PATH, 'analytics.erb')))

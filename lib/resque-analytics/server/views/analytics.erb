@@ -8,30 +8,9 @@
   <h2><%= job %></h2>
   <% performed = chart_data(@data, job, Resque::Plugins::Analytics::PERFORMED) %>
   <% failed = chart_data(@data, job, Resque::Plugins::Analytics::FAILED) %>
-  <%= Gchart.bar(
-    data: [performed, failed],
-    title: "Number of jobs",
-    format: "image_tag",
-    size: "1000x300",
-    axis_with_labels: ['x,y'],
-    bar_width_and_spacing: '6',
-    axis_range: [[-90,0,-5], [0, performed.max + failed.max ]],
-    legend: [Resque::Plugins::Analytics::PERFORMED, Resque::Plugins::Analytics::FAILED],
-    legend_position: 'top',
-    bar_colors: ['000000', '0088FF']
-  ) %>
+  <%= chart_it("Number of jobs", [Resque::Plugins::Analytics::PERFORMED, Resque::Plugins::Analytics::FAILED], [performed, failed]) %>
 
   <% run_time = chart_data(@data, job, Resque::Plugins::Analytics::TOTAL_TIME) %>
-  <%= Gchart.bar(
-    data: [run_time],
-    title: "Run time",
-    format: "image_tag",
-    size: "1000x300",
-    axis_with_labels: ['x,y'],
-    bar_width_and_spacing: '6',
-    axis_range: [[-90,0,-5], [0, run_time.max ]],
-    legend: [Resque::Plugins::Analytics::TOTAL_TIME],
-    legend_position: 'top'
-  ) %>
-
+  <% wait_time = chart_data(@data, job, Resque::Plugins::Analytics::WAIT_TIME) %>
+  <%= chart_it("Wait and Run times", [Resque::Plugins::Analytics::WAIT_TIME, Resque::Plugins::Analytics::TOTAL_TIME], [wait_time, run_time]) %>
 <% end %>
