@@ -3,7 +3,7 @@ require 'resque'
 module Resque
   # Override Resque's push method to add a timestemp to each enqueued item
   def push(queue, item)
-    item['analytics_timestamp'] = Time.now if item.is_a?(Hash)
+    item['analytics_timestamp'] = Time.now if item.is_a?(Hash) && !Resque::Plugins::Analytics.ignore_classes.include?(item[:class])
     redis.pipelined do
       watch_queue(queue)
       redis.rpush "queue:#{queue}", encode(item)
@@ -30,6 +30,14 @@ module Resque
       WAIT_TIME = "wait_time"
 
       EXPIRE = 90 * 24 * 60
+
+      def self.ignore_classes=(class_array)
+        @ignore_classes = class_array
+      end
+
+      def self.ignore_classes
+        @ignore_classes || []
+      end
 
       def key(kpi)
         date = Time.now.strftime("%y_%m_%d")

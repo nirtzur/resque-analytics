@@ -15,6 +15,11 @@ Wait is somewhat tricky, as Resque doesn't provide the proper hooks to calculate
 replace Resque's push method, and Job initialization method. These methods now add a timestamp when items are added
 to queues, and use the timestamp to calculate the total wait time, when an item is taken out of the queue.
 
+Note that wait time calculation changes the Resque object that is placed in the queues. It means that code that relies on
+object's exact value will fail. A known conflict is with ts-resque-delta[https://rubygems.org/gems/ts-resque-delta] which
+deletes all queued jobs that have the same key. Adding a timestamp to each key, makes them unique, and conflicts with the
+keys deletion. See the usage section below for further details.
+
 == Installation
 
 Requires resque '~> 1.25.1', and googlecharts '~> 1.6.8'
@@ -38,6 +43,10 @@ Extend Resque workers with:
   end
 
 On the Resque screens, you will find a new tab called "Analytics".
+
+If you wish to stop collection wait time for certain classes, add the following to your resque.rb initializer:
+Resque::Plugins::Analytics.ignore_classes = ['worker_class', ...]
+where worker class represents a job class for which you do not want to collect wait time metrics.
 
 == TODO
 
