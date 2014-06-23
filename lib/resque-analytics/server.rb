@@ -29,8 +29,8 @@ module Resque
             @legend_keys ||= (-90..0).map { |number| number.days.from_now.strftime("%y_%m_%d")}
           end
 
-          def chart_data(data, job, kpi)
-            legend_keys.map { |key| @data[job][kpi][key].to_i || 0 }
+          def chart_data(data, kpi)
+            legend_keys.map { |key| @data[kpi][key].to_i || 0 }
           end
 
           def chart_it(title, legend, data)
@@ -52,11 +52,10 @@ module Resque
         class << self
           def registered(app)
             app.get '/analytics' do
-              @data = measured_jobs.inject({}) { |res, job|
-                res[job] = {}
-                [PERFORMED, FAILED, TOTAL_TIME, WAIT_TIME].each { |kpi| res[job][kpi] = counters_for(job, kpi) }
-                res
-              }
+              @job = params[:job] || measured_jobs.first
+
+              @data = {}
+              [PERFORMED, FAILED, TOTAL_TIME, WAIT_TIME].each { |kpi| @data[kpi] = counters_for(@job, kpi) }
               erb(File.read(File.join(VIEW_PATH, 'analytics.erb')))
             end
 

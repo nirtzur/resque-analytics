@@ -4,13 +4,22 @@
   Various KPIs related to Resque jobs
 </p>
 
-<% @data.keys.each do |job| %>
-  <h2><%= job %></h2>
-  <% performed = chart_data(@data, job, Resque::Plugins::Analytics::PERFORMED) %>
-  <% failed = chart_data(@data, job, Resque::Plugins::Analytics::FAILED) %>
-  <%= chart_it("Number of jobs", [Resque::Plugins::Analytics::PERFORMED, Resque::Plugins::Analytics::FAILED], [performed, failed]) %>
+<form action='analytics', method='get'>
+  <label>Select Job</label>
+  <select name="job">
+    <% measured_jobs.each do |job| %>
+      <% selected = job == @job ? 'selected="selected"' : '' %>
+      <option value="<%= job %>"<%= selected %>><%= job %></option>
+    <% end %>
+  </select>
+  <input type="submit" />
+</form>
 
-  <% run_time = chart_data(@data, job, Resque::Plugins::Analytics::TOTAL_TIME) %>
-  <% wait_time = chart_data(@data, job, Resque::Plugins::Analytics::WAIT_TIME) %>
-  <%= chart_it("Wait and Run times", [Resque::Plugins::Analytics::WAIT_TIME, Resque::Plugins::Analytics::TOTAL_TIME], [wait_time, run_time]) %>
-<% end %>
+<h2><%= @job %></h2>
+<% performed = chart_data(@data, Resque::Plugins::Analytics::PERFORMED) %>
+<% failed = chart_data(@data, Resque::Plugins::Analytics::FAILED) %>
+<%= chart_it("Number of jobs", [Resque::Plugins::Analytics::PERFORMED, Resque::Plugins::Analytics::FAILED], [performed, failed]) %>
+
+<% run_time = chart_data(@data, Resque::Plugins::Analytics::TOTAL_TIME) %>
+<% wait_time = chart_data(@data, Resque::Plugins::Analytics::WAIT_TIME) %>
+<%= chart_it("Wait and Run times", [Resque::Plugins::Analytics::WAIT_TIME, Resque::Plugins::Analytics::TOTAL_TIME], [wait_time, run_time]) %>

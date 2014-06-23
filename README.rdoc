@@ -46,6 +46,7 @@ On the Resque screens, you will find a new tab called "Analytics".
 
 If you wish to stop collection wait time for certain classes, add the following to your resque.rb initializer:
 Resque::Plugins::Analytics.ignore_classes = ['worker_class', ...]
+
 where worker class represents a job class for which you do not want to collect wait time metrics.
 
 == TODO

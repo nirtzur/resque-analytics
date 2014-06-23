@@ -1,3 +1,7 @@
+## 0.6.3 (June 23, 2014)
+
+* Add ability to select worker jobs on index screen
+
 ## 0.6.2 (June 11, 2014)
 
 * Provide ignore_classes to stop collecting wait time on specific worker classes
