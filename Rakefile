@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'bundler'
+require 'resque'
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -48,4 +49,18 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "resque-analytics #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
+desc "Convert multiple queues to a single summarized value"
+task :multi_convert do
+  require 'byebug'
+  Resque.redis.keys("analytics:*").each do |key|
+    _, kpi, job, date = key.split(":")
+    if Resque.redis.type(key) == "string"
+      Resque.redis.hincrby("resque-analytics:#{date}", "#{job}:#{kpi}", Resque.redis.get(key))
+    else
+      Resque.redis.hincrbyfloat("resque-analytics:#{date}", "#{job}:#{kpi}", Resque.redis.lrange(key, 0, -1).inject(0) {|sum,x| sum+x.to_f})
+    end
+    puts "handling #{key}\n"
+  end
 end

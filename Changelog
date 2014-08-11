@@ -1,3 +1,7 @@
+## 0.7.0 (August 11, 2014)
+
+* Move statistics to summary format, keep a single value for each key per day
+
 ## 0.6.3 (June 23, 2014)
 
 * Add ability to select worker jobs on index screen

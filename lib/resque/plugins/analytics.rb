@@ -13,7 +13,7 @@ module Resque
   class Job
     # Override Job initialization to extract the timestamp
     def initialize(queue, payload)
-      timestamp = payload.delete('analytics_timestamp')
+      timestamp = payload && payload.delete('analytics_timestamp')
       @queue = queue
       @payload = payload
       @failure_hooks_ran = false
@@ -39,9 +39,13 @@ module Resque
         @ignore_classes || []
       end
 
-      def key(kpi)
+      def key
         date = Time.now.strftime("%y_%m_%d")
-        "analytics:#{kpi}:#{self.name}:#{date}"
+        "resque-analytics:#{date}"
+      end
+
+      def field(kpi)
+        "#{self.name}:#{kpi}"
       end
 
       def around_perform_analytics(*args)
@@ -49,23 +53,23 @@ module Resque
         yield
         total_time = Time.now - start
 
-        Resque.redis.lpush(key(TOTAL_TIME), total_time)
-        Resque.redis.expire(key(WAIT_TIME), EXPIRE)
+        Resque.redis.hincrbyfloat(key, field(TOTAL_TIME), total_time)
+        Resque.redis.expire(key, EXPIRE)
       end
 
       def after_perform_analytics(*args)
-        Resque.redis.incr(key(PERFORMED))
-        Resque.redis.expire(key(WAIT_TIME), EXPIRE)
+        Resque.redis.hincrby(key, field(PERFORMED), 1)
+        Resque.redis.expire(key, EXPIRE)
       end
 
       def on_failure_analytics(error, *args)
-        Resque.redis.incr(key(FAILED))
-        Resque.redis.expire(key(WAIT_TIME), EXPIRE)
+        Resque.redis.hincrby(key, field(FAILED), 1)
+        Resque.redis.expire(key, EXPIRE)
       end
 
       def analytics_timestamp(timestamp)
-        Resque.redis.lpush(key(WAIT_TIME), Time.now - Time.parse(timestamp))
-        Resque.redis.expire(key(WAIT_TIME), EXPIRE)
+        Resque.redis.hincrbyfloat(key, field(WAIT_TIME), Time.now - Time.parse(timestamp))
+        Resque.redis.expire(key, EXPIRE)
       end
 
     end

@@ -9,20 +9,15 @@ module Resque
 
         module Helpers
           def counters_for(job, kpi)
-            kpi_keys = Resque.redis.keys("analytics:#{kpi}:#{job}:*").sort { |a,b| a <=> b }
-            kpi_keys.inject({}) { |res, key| res[key.split(':').last] = key_value(key); res}
+            kpi_keys = Resque.redis.keys("resque-analytics:*").sort { |a,b| a <=> b }
+            kpi_keys.inject({}) { |res, key| res[key.split(':').last] = Resque.redis.hget(key, "#{job}:#{kpi}"); res}
           end
 
           def measured_jobs
-            Resque.redis.keys("analytics*").map { |key| key.split(':')[2] }.uniq
-          end
-
-          def key_value(key)
-            if Resque.redis.type(key) == "string"
-              Resque.redis.get(key)
-            else
-              Resque.redis.lrange(key, 0, -1).map(&:to_f).sum
-            end
+            yesterday = 1.day.ago.strftime("%y_%m_%d")
+            today = Time.now.strftime("%y_%m_%d")
+            fields = Resque.redis.hkeys("resque-analytics:#{yesterday}") + Resque.redis.hkeys("resque-analytics:#{today}")
+            fields.map { |field| field.split(':').first }.uniq.sort { |a,b| a <=> b }
           end
 
           def legend_keys
