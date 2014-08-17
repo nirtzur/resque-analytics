@@ -29,7 +29,7 @@ module Resque
       TOTAL_TIME = "total_time"
       WAIT_TIME = "wait_time"
 
-      EXPIRE = 90 * 24 * 60
+      EXPIRE = 90.days.to_i
 
       def self.ignore_classes=(class_array)
         @ignore_classes = class_array
