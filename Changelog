@@ -1,3 +1,8 @@
+## 0.7.2 (Mar 1, 2015)
+
+* Gem update - allow for resque minor releases
+
+
 ## 0.7.1 (August 17, 2014)
 
 * Bug fix - set expiration to 90 days
