@@ -56,11 +56,11 @@ module Resque
       end
 
       def after_perform_analytics(*args)
-        redis_command("hincrby", key, field(PERFORMED), 1)
+        redis_command("hincrby", key, field(PERFORMED))
       end
 
       def on_failure_analytics(error, *args)
-        redis_command("hincrby", key, field(FAILED), 1)
+        redis_command("hincrby", key, field(FAILED))
       end
 
       def analytics_timestamp(timestamp)
@@ -69,7 +69,7 @@ module Resque
 
       def redis_command command, key, field, timestamp
         tries ||= 3
-        Resque.redis.send(command, key, field, timestamp)
+        Resque.redis.send(command, key, field, timestamp = 1)
         Resque.redis.expire(key, EXPIRE)
       rescue Redis::TimeoutError
         retry if (tries -= 1).nonzero?
