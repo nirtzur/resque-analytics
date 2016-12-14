@@ -52,24 +52,27 @@ module Resque
         start = Time.now
         yield
         total_time = Time.now - start
-
-        Resque.redis.hincrbyfloat(key, field(TOTAL_TIME), total_time)
-        Resque.redis.expire(key, EXPIRE)
+        redis_command("hincrbyfloat", key, field(TOTAL_TIME), total_time)
       end
 
       def after_perform_analytics(*args)
-        Resque.redis.hincrby(key, field(PERFORMED), 1)
-        Resque.redis.expire(key, EXPIRE)
+        redis_command("hincrby", key, field(PERFORMED))
       end
 
       def on_failure_analytics(error, *args)
-        Resque.redis.hincrby(key, field(FAILED), 1)
-        Resque.redis.expire(key, EXPIRE)
+        redis_command("hincrby", key, field(FAILED))
       end
 
       def analytics_timestamp(timestamp)
-        Resque.redis.hincrbyfloat(key, field(WAIT_TIME), Time.now - Time.parse(timestamp))
+        redis_command("hincrbyfloat", key, field(WAIT_TIME), Time.now - Time.parse(timestamp))
+      end
+
+      def redis_command(command, key, field, timestamp = 1)
+        tries ||= 3
+        Resque.redis.send(command, key, field, timestamp)
         Resque.redis.expire(key, EXPIRE)
+      rescue Redis::TimeoutError
+        retry if (tries -= 1).nonzero?
       end
 
     end
