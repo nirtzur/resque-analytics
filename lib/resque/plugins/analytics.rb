@@ -67,9 +67,9 @@ module Resque
         redis_command("hincrbyfloat", key, field(WAIT_TIME), Time.now - Time.parse(timestamp))
       end
 
-      def redis_command command, key, field, timestamp
+      def redis_command(command, key, field, timestamp = 1)
         tries ||= 3
-        Resque.redis.send(command, key, field, timestamp = 1)
+        Resque.redis.send(command, key, field, timestamp)
         Resque.redis.expire(key, EXPIRE)
       rescue Redis::TimeoutError
         retry if (tries -= 1).nonzero?
