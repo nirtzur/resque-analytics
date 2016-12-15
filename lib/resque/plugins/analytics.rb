@@ -71,7 +71,7 @@ module Resque
         tries ||= 3
         Resque.redis.send(command, key, field, timestamp)
         Resque.redis.expire(key, EXPIRE)
-      rescue Redis::TimeoutError
+      rescue Redis::TimeoutError, Redis::CannotConnectError
         retry if (tries -= 1).nonzero?
       end
 
