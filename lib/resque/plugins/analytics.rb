@@ -3,11 +3,14 @@ require 'resque'
 module Resque
   # Override Resque's push method to add a timestemp to each enqueued item
   def push(queue, item)
+    tries ||= 3
     item['analytics_timestamp'] = Time.now if item.is_a?(Hash) && !Resque::Plugins::Analytics.ignore_classes.include?(item[:class])
     redis.pipelined do
       watch_queue(queue)
       redis.rpush "queue:#{queue}", encode(item)
     end
+  rescue Redis::TimeoutError, Redis::CannotConnectError
+    retry if (tries -= 1).nonzero?
   end
 
   class Job
